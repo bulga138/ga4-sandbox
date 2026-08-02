@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="GA4 Tagging Sandbox — test every Google Analytics 4 event type without wiring up a full property first."
+    />
+    <title>GA4 Tagging Sandbox</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Theme toggle (fixed) -->
+    <button
+      class="theme-toggle"
+      id="theme-toggle-btn"
+      aria-label="Toggle between light and dark theme. Current: dark mode"
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="5" />
+        <path
+          d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+        />
+      </svg>
+      <span id="theme-label">Light</span>
+    </button>
+
+    <div class="blob blob-1" aria-hidden="true"></div>
+    <div class="blob blob-2" aria-hidden="true"></div>
+    <div class="blob blob-3" aria-hidden="true"></div>
+
+    <div class="wrap" id="main-content" role="main" tabindex="-1">
+      <!-- ===== HEADER ===== -->
+      <header class="header mb-4">
+        <div>
+          <h1 class="page-title">GA4 Tagging Sandbox</h1>
+          <p class="page-subtitle">
+            Test every Google Analytics 4 event type — automatic, enhanced, custom, ecommerce, hover, and URL-driven. No
+            personal data collected; events are logged to the panel below and your browser console.
+          </p>
+        </div>
+        <div class="flex gap-2 items-center flex-wrap">
+          <span class="badge" id="send-status">SANDBOX (logging only)</span>
+          <span class="badge" id="measurement-id">G-REPLACE_ME</span>
+          <input
+            id="measurement-input"
+            class="input"
+            type="text"
+            placeholder="Paste G-XXXXX"
+            aria-label="GA4 Measurement ID"
+            style="width: 160px"
+          />
+        </div>
+      </header>
+
+      <p class="mono muted mb-4" id="full-url" aria-label="Current page URL"></p>
+
+      <!-- ===== 1. URL INSPECTOR ===== -->
+      <div class="section-label">1 · URL Inspector &amp; Campaign Params</div>
+      <div class="glass p-5 mb-3" data-view="url-inspector">
+        <div class="flex justify-between items-center gap-3 flex-wrap">
+          <div>
+            <h2 class="card-title">Current URL breakdown</h2>
+            <p class="card-desc">
+              GA4 maps UTM params automatically on page_view. Test with the sample links, or append your own
+              <code>?utm_source=...</code> params.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid2 mt-3">
+          <div>
+            <div class="kv-row"><span class="kv-key">pathname</span><span class="kv-value" id="url-path"></span></div>
+            <div class="kv-row"><span class="kv-key">hash</span><span class="kv-value" id="url-hash"></span></div>
+            <div class="section-label mt-3">Query params</div>
+            <div id="url-params"></div>
+          </div>
+          <div>
+            <div class="section-label">Detected campaign params</div>
+            <div id="url-campaign"></div>
+          </div>
+        </div>
+
+        <div class="section-label mt-4">Sample URLs to try</div>
+        <div class="btn-row" id="sample-urls"></div>
+      </div>
+
+      <!-- ===== 2. AUTOMATIC / ENHANCED ===== -->
+      <div class="section-label">2 · Automatic &amp; Enhanced Measurement</div>
+      <div class="glass p-5 mb-3" data-view="auto-events">
+        <h2 class="card-title">Sent automatically by GA4</h2>
+        <p class="card-desc">
+          <span class="badge badge-info">page_view</span>
+          <span class="badge badge-info">session_start</span>
+          <span class="badge badge-info">scroll (90%)</span>
+          <span class="badge badge-info">engagement</span>
+          <span class="badge badge-info">click (outbound)</span>
+          <span class="badge badge-info">form_start / form_submit</span>
+        </p>
+        <div class="btn-row mt-3">
+          <a class="btn btn-ghost" href="https://example.com" target="_blank" rel="noopener" data-event="click">
+            Outbound link (EM auto-fires)
+          </a>
+          <a class="btn btn-ghost" href="files/sample.txt" download data-event="file_download">
+            Download file (EM auto-fires)
+          </a>
+          <button class="btn btn-ghost" data-event="file_download">Manual file_download event</button>
+          <button class="btn btn-ghost" data-event="scroll" data-params='{"percent_scrolled":90}'>
+            Simulate scroll 90%
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== 3. VIDEO ===== -->
+      <div class="section-label">3 · Video Events</div>
+      <div class="glass p-5 mb-3" data-view="video">
+        <h2 class="card-title">Enhanced Measurement: video</h2>
+        <p class="card-desc">
+          Mirrors <code>video_start</code>, <code>video_progress</code> (10/25/50/75%) and <code>video_complete</code>.
+        </p>
+        <video
+          id="demo-video"
+          class="video-demo"
+          controls
+          playsinline
+          preload="none"
+          data-title="Sample flower video"
+          aria-label="Sample video used to demonstrate GA4 video events"
+        >
+          <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+
+      <!-- ===== 4. CUSTOM EVENTS ===== -->
+      <div class="section-label">4 · Custom Events (with &amp; without params)</div>
+      <div class="grid2">
+        <!-- Search form -->
+        <div class="glass p-5" data-view="search-form">
+          <h2 class="card-title">search</h2>
+          <p class="card-desc">
+            Requires <code>search_term</code>. Also fires EM <code>form_start</code>/<code>form_submit</code>
+            automatically.
+          </p>
+          <form data-event="search" class="flex gap-3 flex-wrap">
+            <input
+              class="input"
+              name="search_term"
+              type="text"
+              placeholder="e.g. wireless keyboard"
+              aria-label="Search term"
+            />
+            <button class="btn btn-primary" type="submit">Search</button>
+          </form>
+        </div>
+
+        <!-- Sign up form -->
+        <div class="glass p-5" data-view="signup-form">
+          <h2 class="card-title">sign_up / login</h2>
+          <p class="card-desc">Param: <code>method</code> (e.g. google, email). No real data is sent.</p>
+          <form data-event="sign_up" class="flex gap-3 flex-wrap">
+            <label class="flex items-center gap-2">
+              <span class="toggle-label">Method</span>
+              <select class="select" name="method" aria-label="Sign up method">
+                <option value="google">google</option>
+                <option value="email">email</option>
+                <option value="github">github</option>
+              </select>
+            </label>
+            <button class="btn btn-primary" type="submit">Sign up</button>
+          </form>
+          <button class="btn btn-secondary mt-3" data-event="login" data-params='{"method":"email"}'>Log in</button>
+        </div>
+
+        <!-- Lead + content -->
+        <div class="glass p-5" data-view="content-engagement">
+          <h2 class="card-title">generate_lead / select_content</h2>
+          <p class="card-desc">Lead value auto-computed from the shared <code>ITEMS</code> catalog.</p>
+          <div class="btn-row">
+            <button class="btn btn-primary" data-event="generate_lead">Generate lead</button>
+            <button class="btn btn-secondary" data-event="select_content">Select product</button>
+          </div>
+        </div>
+
+        <!-- Share + promo -->
+        <div class="glass p-5" data-view="promotion">
+          <h2 class="card-title">share / promotions</h2>
+          <p class="card-desc">Share with <code>method</code>; promotions with <code>promotion_id</code>.</p>
+          <div class="btn-row">
+            <button class="btn btn-secondary" data-event="share">Share page</button>
+            <button
+              class="btn btn-ghost"
+              data-event="view_promotion"
+              data-params='{"promotion_id":"PROMO_SUMMER","promotion_name":"Summer Sale","creative_name":"banner_top"}'
+            >
+              View promo
+            </button>
+            <button
+              class="btn btn-ghost"
+              data-event="select_promotion"
+              data-params='{"promotion_id":"PROMO_SUMMER","promotion_name":"Summer Sale","creative_name":"banner_top"}'
+            >
+              Click promo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 5. ECOMMERCE ===== -->
+      <div class="section-label">5 · Ecommerce Funnel</div>
+      <div class="glass p-5 mb-3" data-view="ecommerce">
+        <h2 class="card-title">Full purchase funnel</h2>
+        <p class="card-desc">
+          Uses the shared <code>ITEMS</code> catalog from config.js — currency, value and items are computed, never
+          hardcoded.
+        </p>
+        <div class="btn-row">
+          <button class="btn btn-secondary" data-event="view_item">view_item</button>
+          <button class="btn btn-secondary" data-event="add_to_cart">add_to_cart</button>
+          <button class="btn btn-secondary" data-event="begin_checkout">begin_checkout</button>
+          <button class="btn btn-secondary" data-event="add_payment_info">add_payment_info</button>
+          <button class="btn btn-success" data-event="purchase">purchase</button>
+          <button class="btn btn-danger" data-event="refund">refund</button>
+        </div>
+      </div>
+
+      <!-- ===== 6. INTERACTIONS ===== -->
+      <div class="section-label">6 · Hover, Focus &amp; Query-Param Events</div>
+      <div class="grid2">
+        <div class="glass p-5" data-view="hover">
+          <h2 class="card-title">element_hover</h2>
+          <p class="card-desc">
+            Custom event fired on <code>pointerenter</code> or keyboard <code>focusin</code>. Tab to this zone to fire
+            it without a mouse.
+          </p>
+          <button class="hover-zone" data-event="element_hover" data-mode="hover" tabindex="0">
+            Hover or focus me
+          </button>
+          <p class="card-desc mt-3">
+            Cards tagged <code>data-view</code> fire <code>element_view</code> when 60% scrolled into view.
+          </p>
+        </div>
+
+        <div class="glass p-5" data-view="experiments">
+          <h2 class="card-title">query_param_test / test_event</h2>
+          <p class="card-desc">
+            <code>query_param_test</code> echoes a query param. Open <code>?product=keyboard</code> first, then click
+            below.
+          </p>
+          <div class="btn-row">
+            <button class="btn btn-ghost" data-event="query_param_test" data-param-key="product">Echo ?product=</button>
+            <button class="btn btn-ghost" data-event="query_param_test" data-param-key="color">Echo ?color=</button>
+            <button class="btn btn-ghost" data-event="test_event">Send test_event</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 7. CONSENT & DEBUG ===== -->
+      <div class="section-label">7 · Consent Mode &amp; DebugView</div>
+      <div class="glass p-5 mb-3" data-view="consent">
+        <h2 class="card-title">Live controls</h2>
+        <p class="card-desc">
+          Consent is defaulted to <code>denied</code>. Grant analytics consent to see how GA4 tags respond. Debug mode
+          targets DebugView in your property.
+        </p>
+        <div class="btn-row mt-3">
+          <label class="toggle" for="consent-toggle">
+            <input type="checkbox" id="consent-toggle" />
+            <div class="toggle-track"><div class="toggle-thumb"></div></div>
+          </label>
+          <span class="toggle-label">analytics_storage: granted</span>
+          <label class="toggle ml-3" for="debug-toggle">
+            <input type="checkbox" id="debug-toggle" />
+            <div class="toggle-track"><div class="toggle-thumb"></div></div>
+          </label>
+          <span class="toggle-label">debug_mode (DebugView)</span>
+        </div>
+      </div>
+
+      <!-- ===== 8. EVENT LOG ===== -->
+      <div class="section-label">8 · Event Log</div>
+      <div class="glass p-5" role="region" aria-label="Dispatched analytics events log">
+        <div class="flex justify-between items-center gap-3 flex-wrap mb-2">
+          <h2 class="card-title">Every gtag call, live</h2>
+          <span class="muted mono">Open DevTools → Console for the same output</span>
+        </div>
+        <div id="event-log">
+          <div class="log-empty" id="log-empty">No events yet. Interact with the page above.</div>
+        </div>
+      </div>
+
+      <!-- Scroll target so GA4's scroll / element_view triggers naturally -->
+      <div style="height: 80vh" aria-hidden="true"></div>
+      <div class="glass p-5" data-view="page-bottom">
+        <h2 class="card-title">End of page</h2>
+        <p class="card-desc">
+          Scrolling here fires <code>element_view</code> (IntersectionObserver) and, in a real property, GA4's automatic
+          <code>scroll</code> event at 90%.
+        </p>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

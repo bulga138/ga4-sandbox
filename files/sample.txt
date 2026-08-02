@@ -1,0 +1,2 @@
+This is a dummy download file used by the GA4 Tagging Sandbox to demonstrate
+the file_download enhanced-measurement event. It contains no personal data.
